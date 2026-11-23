@@ -60,7 +60,12 @@ struct StatCard: View {
 
 struct CardView<Content: View>: View {
     let title: String
-    @ViewBuilder var content: Content
+    let content: Content
+
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
