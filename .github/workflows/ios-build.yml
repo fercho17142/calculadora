@@ -14,30 +14,37 @@ jobs:
     runs-on: macos-15
 
     steps:
+      # 1. Descargar repositorio
       - name: Checkout del repositorio
         uses: actions/checkout@v4
 
+      # 2. Verificar entorno
       - name: Verificar macOS y Xcode
         run: |
           sw_vers
           xcodebuild -version
 
+      # 3. Instalar XcodeGen
       - name: Instalar XcodeGen
         run: brew install xcodegen
 
+      # 4. Generar proyecto Xcode
       - name: Generar proyecto Xcode
         working-directory: ios
         run: xcodegen generate
 
+      # 5. Verificar proyecto y Scheme
       - name: Verificar proyecto y Scheme
         working-directory: ios
         run: |
           ls -la
           xcodebuild -list -project BetCalculator.xcodeproj
 
+      # 6. Listar simuladores
       - name: Listar simuladores disponibles
         run: xcrun simctl list devices available
 
+      # 7. Compilar para simulador iOS
       - name: Compilar para iOS Simulator
         working-directory: ios
         run: |
@@ -52,6 +59,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
+      # 8. Compilar para dispositivo iOS
       - name: Compilar para dispositivo iOS (sin firma)
         working-directory: ios
         run: |
@@ -66,3 +74,58 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             build
+
+      # 9. Verificar aplicación compilada
+      - name: Verificar BetCalculator.app
+        run: |
+          APP_PATH="build/device/Build/Products/Debug-iphoneos/BetCalculator.app"
+
+          if [ ! -d "$APP_PATH" ]; then
+            echo "ERROR: No se encontró BetCalculator.app"
+            exit 1
+          fi
+
+          echo "Aplicación encontrada correctamente"
+          ls -lah "$APP_PATH"
+
+      # 10. Generar IPA sin firma
+      - name: Generar IPA sin firma
+        run: |
+          APP_PATH="build/device/Build/Products/Debug-iphoneos/BetCalculator.app"
+
+          mkdir -p ipa/Payload
+          cp -R "$APP_PATH" ipa/Payload/
+
+          cd ipa
+          zip -qry ../BetCalculator-unsigned.ipa Payload
+          cd ..
+
+          ls -lh BetCalculator-unsigned.ipa
+
+      # 11. Subir IPA a GitHub
+      - name: Subir IPA a GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: BetCalculator-IPA
+          path: BetCalculator-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7
+
+      # 12. Subir aplicación para simulador
+      - name: Subir aplicación iOS Simulator
+        uses: actions/upload-artifact@v4
+        with:
+          name: BetCalculator-Simulator
+          path: build/simulator/Build/Products/Debug-iphonesimulator/BetCalculator.app
+          if-no-files-found: error
+          retention-days: 7
+
+      # 13. Subir aplicación para dispositivo
+      - name: Subir aplicación iOS Device
+        uses: actions/upload-artifact@v4
+        with:
+          name: BetCalculator-Device
+          path: build/device/Build/Products/Debug-iphoneos/BetCalculator.app
+          if-no-files-found: error
+          retention-days: 7
+
