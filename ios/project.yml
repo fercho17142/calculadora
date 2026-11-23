@@ -1,0 +1,35 @@
+name: BetCalculator
+options:
+  bundleIdPrefix: com.betcalculator
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  BetCalculator:
+    type: application
+    platform: iOS
+    sources:
+      - path: BetCalculator
+    info:
+      path: BetCalculator/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.betcalculator.app
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: BetCalculator/Info.plist
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+schemes:
+  BetCalculator:
+    build:
+      targets:
+        BetCalculator: all
+    run:
+      config: Debug

@@ -1,0 +1,52 @@
+name: iOS Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compilar BetCalculator (SwiftUI)
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar XcodeGen
+        run: brew install xcodegen
+
+      - name: Generar proyecto Xcode
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Listar simuladores disponibles
+        run: xcrun simctl list devices available
+
+      - name: Compilar para iOS Simulator
+        working-directory: ios
+        run: >
+          xcodebuild
+          -project BetCalculator.xcodeproj
+          -scheme BetCalculator
+          -configuration Debug
+          -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
+          build
+
+      - name: Compilar para dispositivo iOS (sin firma)
+        working-directory: ios
+        run: >
+          xcodebuild
+          -project BetCalculator.xcodeproj
+          -scheme BetCalculator
+          -configuration Debug
+          -sdk iphoneos
+          -destination 'generic/platform=iOS'
+          CODE_SIGNING_ALLOWED=NO
+          CODE_SIGNING_REQUIRED=NO
+          build

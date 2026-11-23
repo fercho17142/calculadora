@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model HistoryRecord {
+  id             Int      @id @default(autoincrement())
+  initialCapital Float
+  odd            Float
+  totalBets      Int
+  goal           Float
+  mode           String
+  riskPercent    Float
+  wins           Int
+  losses         Int
+  finalCapital   Float
+  netGain        Float
+  profitability  Float
+  totalStaked    Float
+  totalReturned  Float
+  goalAchieved   Boolean
+  resultsJson    String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("history_records")
+}

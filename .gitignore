@@ -1,0 +1,48 @@
+# Dependencias
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Builds
+dist/
+build/
+
+# Prisma generado
+server/prisma/generated/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Pruebas y cobertura
+coverage/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Xcode / iOS
+ios/**/xcuserdata/
+ios/**/*.xcworkspace/xcuserdata/
+DerivedData/
+*.xcuserstate
+*.xccheckout
+ios/build/
+ios/*.xcodeproj/project.xcworkspace/
+ios/*.xcodeproj/xcuserdata/
