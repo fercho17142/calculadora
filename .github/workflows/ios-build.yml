@@ -1,3 +1,4 @@
+
 name: iOS Build
 
 on:
@@ -10,11 +11,16 @@ on:
 jobs:
   build:
     name: Compilar BetCalculator (SwiftUI)
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
+
+      - name: Verificar macOS y Xcode
+        run: |
+          sw_vers
+          xcodebuild -version
 
       - name: Instalar XcodeGen
         run: brew install xcodegen
@@ -23,30 +29,40 @@ jobs:
         working-directory: ios
         run: xcodegen generate
 
+      - name: Verificar proyecto y Scheme
+        working-directory: ios
+        run: |
+          ls -la
+          xcodebuild -list -project BetCalculator.xcodeproj
+
       - name: Listar simuladores disponibles
         run: xcrun simctl list devices available
 
       - name: Compilar para iOS Simulator
         working-directory: ios
-        run: >
-          xcodebuild
-          -project BetCalculator.xcodeproj
-          -scheme BetCalculator
-          -configuration Debug
-          -sdk iphonesimulator
-          -destination 'generic/platform=iOS Simulator'
-          CODE_SIGNING_ALLOWED=NO
-          build
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project BetCalculator.xcodeproj \
+            -scheme BetCalculator \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath ../build/simulator \
+            CODE_SIGNING_ALLOWED=NO \
+            build
 
       - name: Compilar para dispositivo iOS (sin firma)
         working-directory: ios
-        run: >
-          xcodebuild
-          -project BetCalculator.xcodeproj
-          -scheme BetCalculator
-          -configuration Debug
-          -sdk iphoneos
-          -destination 'generic/platform=iOS'
-          CODE_SIGNING_ALLOWED=NO
-          CODE_SIGNING_REQUIRED=NO
-          build
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project BetCalculator.xcodeproj \
+            -scheme BetCalculator \
+            -configuration Debug \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath ../build/device \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
